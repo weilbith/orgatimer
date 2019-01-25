@@ -38,9 +38,6 @@ fi
 # Logs the tools ouput if requested.
 #
 function executeTool {
-  echo "$COMMAND"
-  return
-
   # Update GPG cache if required.
   if $GPG_REQUIRED; then
     update_gpg_cache "$RECIPIENT" "$GRIP" || return
