@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Temporally files achieve updating.
-TMP_RAW_FILE="$XDG_RUNTIME_DIR/organizer_cash"
+TMP_RAW_FILE="${XDG_RUNTIME_DIR}/${NAME}/organizer_cache"
 TMP_ENCRYPTED_FILE="${TMP_RAW_FILE}.gpg"
 
 # ---
@@ -63,8 +63,8 @@ function update_gpg_cache {
     'echo "Organizer key password cache has expired!";' \
     'read -p "Update cache? [Y/n]: " answer;' \
     'if [[ "${answer}" == "" || "${answer}" == "y" ]]; then' \
-    "gpg --decrypt /tmp/organizer_cash.gpg;" \
-    'fi' \
+    "gpg --decrypt $TMP_ENCRYPTED_FILE;" \
+    'fi'
   )
 
   urxvt -name organized-poller -geometry 45x5 -e sh -c "$command"

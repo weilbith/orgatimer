@@ -2,7 +2,7 @@
 # shellcheck disable=SC1090 
 
 # Name used for paths specific for this application.
-NAME="orgatimer"
+export NAME="orgatimer"
 
 # Make sure the XDG environment variables are defined.
 [[ -z "$XDG_CONFIG_HOME" ]] && export XDG_CONFIG_HOME="$HOME/.config"
@@ -17,6 +17,7 @@ export ORGATIMER_DIR_CONFIG_GLOBAL
 ORGATIMER_DIR_CONFIG_GLOBAL="/etc/$NAME"
 ORGATIMER_DIR_CONFIG_USER="$XDG_CONFIG_HOME/$NAME"
 ORGATIMER_DIR_COMPONENTS="/usr/lib/$NAME/components"
+[[ "$1" == "test" ]] && ORGATIMER_DIR_COMPONENTS="$(dirname "${BASH_SOURCE[0]}")/components" && echo 'jpp'
 
 
 # Files
