@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC1090 
+# shellcheck disable=SC1090,SC2002
 #
 # Manage a single tool process.
 # Executes the tool initially once.
@@ -10,27 +10,66 @@
 # Parse the arguments.
 COMMAND="$1" # Command property of the tool.
 INTERVAL="$2" # Interval property of the tool.
-RECIPIENT="$3" # Recipient property of the tool [optional]
-GRIP="$4" # Grip property of the tool [optional]
-LOG="$5" # Log file name if logging is requested [optional]
+INTERNET="$3" # Boolean if internet is necessary [optional]
+LOG="$4" # Log file name if logging is requested [optional]
+RECIPIENT="$5" # Recipient property of the tool [optional]
+GRIP="$6" # Grip property of the tool [optional]
 
 # Parse parameter
 GPG_REQUIRED=false
-[[ -n "$2" ]] && [[ -n "$3" ]] && GPG_REQUIRED=true
+[[ -n "$RECIPIENT" ]] && [[ -n "$GRIP" ]] && GPG_REQUIRED=true
+[[ -n "$INTERNET" ]] && $INTERNET || INTERNET=false
+INTERVAL_INTERVAL=$INTERVAL
 
 # ---
 
 
-# Load additional functionality in case it is needed.
+# Sourcing
+
+## Load additional functionality in case it is needed.
 if $GPG_REQUIRED; then
   source "$ORGATIMER_COMPONENT_GPG_UTILS" # Additional functions to interact with GnuPG.
   source "$ORGATIMER_COMPONENT_BLOCKER" # Utility functions which provide some semaphore functionality.
 fi
 
+## Get specific configuration values (user declaration overwrites global)
+source <(cat "$ORGATIMER_FILE_CONFIG_GLOBAL" | grep -E "^INTERVAL_WITHOUT_INTERNET")
+source <(cat "$ORGATIMER_FILE_CONFIG_USER" | grep -E "^INTERVAL_WITHOUT_INTERNET")
+
 # ---
 
 
 # Functions
+
+# Check if the tool requires an internet connection.
+# If not the function is successful per default,
+# else it check if a connection could be established.
+# The outcome is depending on this check,
+# as well as the interval for this handler will be updated.
+# The intention is to use a possibly shorter check interval as long as no connection
+# is available, since the tool is not running in the meantime.
+#
+# Returns:
+#   0 - if tool require no internet or connection is available
+#   1 - else
+#
+function checkInternetAvailability {
+  # Check if the tools needs internet.
+  if ! $INTERNET; then
+    return 0
+  fi
+
+  # Check if internet is available and alter the interval duration.
+  if ping -q -w 5 -c 1 github.com > /dev/null; then
+    INTERVAL_INTERVAL=$INTERVAL
+    return 0
+
+  else
+    INTERVAL_INTERVAL=$INTERVAL_WITHOUT_INTERNET
+    return 1
+  fi
+}
+
 
 # Execute a tool for a single time.
 # Checks if the tool is based on GPG key and make therefore sure the
@@ -56,9 +95,9 @@ function executeTool {
 
 
 # Getting started.
-executeTool
+checkInternetAvailability && executeTool
 
 while : ; do
-  sleep "$INTERVAL"
-  executeTool
+  sleep "$INTERVAL_INTERVAL"
+  checkInternetAvailability && executeTool
 done

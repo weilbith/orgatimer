@@ -132,17 +132,18 @@ function get_tool_property {
 #
 function initTools {
   for tool in "${TOOL_LIST[@]}"; do
-    local command interval recipient grip log
+    local command interval internet log recipient grip
     command=$(get_tool_property "$tool" "$TOOL_KEY_COMMAND")
     interval=$(get_tool_property "$tool" "$TOOL_KEY_INTERVAL")
+    internet=$(get_tool_property "$tool" "$TOOL_KEY_INTERNET")
+    log=$(get_tool_property "$tool" "$TOOL_KEY_LOG")
     recipient=$(get_tool_property "$tool" "$TOOL_KEY_RECIPIENT")
     grip=$(get_tool_property "$tool" "$TOOL_KEY_GRIP")
-    log=$(get_tool_property "$tool" "$TOOL_KEY_LOG")
 
     bash "$ORGATIMER_COMPONENT_TOOL_HANDLER" \
       "$command" "$interval" \
+      "$internet" "$log" \
       "$recipient" "$grip" \
-      "$log" \
       &
 
     # Store the process identifier to be able to kill it later on.
