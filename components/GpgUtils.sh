@@ -67,7 +67,7 @@ function update_gpg_cache {
     'fi'
   )
 
-  urxvt -name organized-poller -geometry 45x5 -e sh -c "$command"
+  $TERMINAL_COMMAND sh -c "$command"
 
   # Tidy up.
   rm -f "$TMP_RAW_FILE" "$TMP_ENCRYPTED_FILE"

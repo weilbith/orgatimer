@@ -33,8 +33,8 @@ if $GPG_REQUIRED; then
 fi
 
 ## Get specific configuration values (user declaration overwrites global)
-source <(cat "$ORGATIMER_FILE_CONFIG_GLOBAL" | grep -E "^INTERVAL_WITHOUT_INTERNET")
-source <(cat "$ORGATIMER_FILE_CONFIG_USER" | grep -E "^INTERVAL_WITHOUT_INTERNET")
+source <(cat "$ORGATIMER_FILE_CONFIG_GLOBAL" | grep -E "^INTERVAL_WITHOUT_INTERNET|^TERMINAL_COMMAND")
+source <(cat "$ORGATIMER_FILE_CONFIG_USER" | grep -E "^INTERVAL_WITHOUT_INTERNET|^TERMINAL_COMMAND")
 
 # ---
 
@@ -84,9 +84,9 @@ function executeTool {
   
   # Execute tool.
   if [[ -n "$LOG" ]]; then
-    local file="${LOG_DIR}/${LOG}.log"
+    local file="${ORGATIMER_DIR_LOGS}/${LOG}.log"
     echo -e "\n\n$(date)\n" >> "$file"
-    $COMMAND 2>&1 >> "$file"
+    { $COMMAND >> "$file"; } 2>&1
   
   else
     $COMMAND

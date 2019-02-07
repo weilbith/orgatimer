@@ -13,9 +13,11 @@ export NAME="orgatimer"
 # Paths
 export ORGATIMER_DIR_CONFIG_USER
 export ORGATIMER_DIR_CONFIG_GLOBAL
+export ORGATIMER_DIR_LOGS
 
 ORGATIMER_DIR_CONFIG_GLOBAL="/etc/$NAME"
 ORGATIMER_DIR_CONFIG_USER="$XDG_CONFIG_HOME/$NAME"
+ORGATIMER_DIR_LOGS="$XDG_CACHE_HOME/$NAME"
 ORGATIMER_DIR_COMPONENTS="/usr/lib/$NAME/components"
 [[ "$1" == "test" ]] && ORGATIMER_DIR_COMPONENTS="$(dirname "${BASH_SOURCE[0]}")/components" && echo 'jpp'
 
@@ -105,7 +107,7 @@ function initialize {
   echo "$$" > "$PID_FILE"
 
   block_disable
-  mkdir -p "$LOG_DIR"
+  mkdir -p "$ORGATIMER_DIR_LOGS"
 }
 
 
