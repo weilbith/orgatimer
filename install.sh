@@ -24,7 +24,6 @@
 # Quit on any error.
 set -e
 
-
 # Variables
 NAME="orgatimer"
 SOURCE="https://github.com/weilbith/orgatimer.git"
@@ -54,22 +53,22 @@ FILE_CONFIG_CUSTOM="${XDG_CONFIG_HOME}/${NAME}/${NAME}.conf"
 
 # ---
 
-
 # Functions
 
 # Installation of the application.
 # This place all sources at their places and
 # make necessary structure available.
 #
-function install {
+function install() {
   echo -e "\\nCreate all necessary directories..."
   "$PERMISSION_PREFIX"mkdir -p "$DIR_LIB"
   "$PERMISSION_PREFIX"mkdir -p "$DIR_SHARE"
   "$PERMISSION_PREFIX"mkdir -p "$DIR_CONFIG"
 
   rm -rf "$DIR_TMP"
-  git clone --depth 1 --recurse-submodules "$SOURCE" "$DIR_TMP"
-  git rev-parse HEAD > "$DIR_SHARE/version"
+  cd "$DIR_TMP"
+  git clone --depth 1 --recurse-submodules "$SOURCE"
+  git rev-parse HEAD >"$DIR_SHARE/version"
 
   echo -e "\\nCopy all sources to their belonging locations..."
   "$PERMISSION_PREFIX"cp -f "${DIR_TMP}/${NAME}.sh" "$DIR_LIB"
@@ -83,11 +82,10 @@ function install {
   rm -rf "$DIR_TMP"
 }
 
-
 # Remove of the application.
 # This deletes all possibly installed sources.
 #
-function remove {
+function remove() {
   echo -e "\\nRemove all references..."
   "$PERMISSION_PREFIX"rm -rf "$DIR_LIB"
   "$PERMISSION_PREFIX"rm -rf "$DIR_SHARE"
@@ -98,25 +96,23 @@ function remove {
   echo -e "\\nIn case you have stored a custom configuration at ${FILE_CONFIG_CUSTOM}, please make sure to remove it by yourself!"
 }
 
-
 # Print the header of this script as help.
 # The header ends with the first empty line.
 #
-function help {
+function help() {
   local file="${BASH_SOURCE[0]}"
   sed -e '/^$/,$d; s/^#//; s/^\!\/bin\/bash//' "$file"
 }
 
-
 # Getting started.
-if [[ "$1" == "$COMMAND_HELP" ]] ; then
+if [[ "$1" == "$COMMAND_HELP" ]]; then
   help
 
 else
   # Make sure to have enough permissions.
   echo -e "\\nCheck for permissions..."
-  if [[ "$EUID" -ne 0 ]] ; then
-    if [[ $(getent group sudo) = *"$USER"* ]] ;  then
+  if [[ "$EUID" -ne 0 ]]; then
+    if [[ $(getent group sudo) == *"$USER"* ]]; then
       echo -e "\\nUser is part of group sudo. Request user for authorization..."
       PERMISSION_PREFIX="sudo "
 
@@ -124,15 +120,15 @@ else
       echo -e "\\nYou must be root or be part of the group sudo!"
       exit 1
     fi
-  else 
+  else
     echo -e "\\nExecuting as root. Permissions granted."
   fi
 
   # Check what should be done.
-  if [[ "$1" == "$COMMAND_INSTALL" ]] ; then
+  if [[ "$1" == "$COMMAND_INSTALL" ]]; then
     install
 
-  elif [[ "$1" == "$COMMAND_REMOVE" ]] ; then
+  elif [[ "$1" == "$COMMAND_REMOVE" ]]; then
     remove
 
   else
