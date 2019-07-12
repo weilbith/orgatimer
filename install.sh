@@ -66,6 +66,7 @@ function install() {
   "$PERMISSION_PREFIX"mkdir -p "$DIR_CONFIG"
 
   rm -rf "$DIR_TMP"
+  mkdir -vp "$DIR_TMP"
   cd "$DIR_TMP"
   git clone --depth 1 --recurse-submodules "$SOURCE"
   git rev-parse HEAD >"$DIR_SHARE/version"
